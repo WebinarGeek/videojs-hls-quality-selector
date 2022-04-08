@@ -30,11 +30,9 @@ export default class ConcreteMenuItem extends VideoJsMenuItemClass {
    * Click event for menu item.
    */
   handleClick() {
-    // Reset other menu items selected status.
+    const success = this.plugin.setQuality(this.item)
+    if (!success) return
     for (let i = 0; i < this.qualityButton.items.length; ++i) this.qualityButton.items[i].selected(false)
-
-    // Set this menu item to selected, and set quality.
-    this.plugin.setQuality(this.item)
     this.selected(true)
   }
 }

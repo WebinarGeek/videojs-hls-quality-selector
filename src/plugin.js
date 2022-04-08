@@ -107,24 +107,23 @@ class HlsQualitySelectorPlugin {
    */
   setQuality(filters = {}) {
     const qualityList = Array.from(this.player.qualityLevels() || [])
+    let match = 'auto'
     if (filters.height === 'auto') {
       qualityList.forEach((ql) => {
         ql.enabled = true
       })
-      this._currentQuality = 'auto'
-      this._qualityButton.unpressButton()
-      return true
+    } else {
+      const levels = qualityList.filter((ql) => (!filters.name || filters.name === ql.name)
+        && (!filters.bitrate || filters.bitrate === ql.bitrate)
+        && (!filters.height || filters.height === ql.height))
+      match = levels?.[0]
+      if (!match) return false
+      qualityList.forEach((ql) => {
+        ql.enabled = match === ql
+      })
     }
-    const levels = qualityList.filter((ql) => (!filters.name || filters.name === ql.name)
-      && (!filters.bitrate || filters.bitrate === ql.bitrate)
-      && (!filters.height || filters.height === ql.height))
-    const match = levels?.[0]
-    if (!match) return false
-    if (this.config.displayCurrentQuality) this.setButtonInnerText(niceLabel(match))
-    qualityList.forEach((ql) => {
-      ql.enabled = match === ql
-    })
     this._currentQuality = match
+    if (this.config.displayCurrentQuality) this.setButtonInnerText(niceLabel(match))
     this._qualityButton.unpressButton()
     return true
   }
@@ -140,6 +139,7 @@ class HlsQualitySelectorPlugin {
 }
 
 const niceLabel = (item) => {
+  if (item === 'auto') return item
   if (item.height && item.bitrate) return `${item.height}p (${item.bitrate / 1000}kb)`
   if (item.height) return `${item.height}p`
   return `${item.bitrate / 1000}kb`
