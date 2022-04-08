@@ -1,19 +1,13 @@
 # videojs-hls-quality-selector
-[![CircleCI](https://circleci.com/gh/chrisboustead/videojs-hls-quality-selector/tree/master.svg?style=svg)](https://circleci.com/gh/chrisboustead/videojs-hls-quality-selector/tree/master)
-[![npm version](https://badge.fury.io/js/videojs-hls-quality-selector.svg)](https://badge.fury.io/js/videojs-hls-quality-selector)
-
-**Note:** v1.x.x is Only compatible with VideoJS 7.x due to the move from `videojs-contrib-hls` to `videojs/http-streaming`.  For VideoJS v5 or v6 support please use a `v0.x.x` tag.
-
-## Description
 
 Adds a quality selector menu for HLS sources played in videojs.  
-Requires `videojs-contrib-quality-levels` plugins.
-
-Any HLS manifest with multiple playlists/renditions should be selectable from within the added control.  
+Requires `videojs-contrib-quality-levels` plugins.  
+Any HLS manifest with multiple playlists/renditions should be selectable from within the added control.
 
 **Native HLS**
 
-Does not yet support browsers using native HLS (Safari, Edge, etc).  To enable plugin in browsers with native HLS, you must force non-native HLS playback:
+Does not yet support browsers using native HLS (Safari, Edge, etc).  
+To enable plugin in browsers with native HLS, you must force non-native HLS playback:
 
 ## Options
 
@@ -36,34 +30,14 @@ Set this to one of the custom VJS icons ([https://videojs.github.io/font/](https
 
 Return the current set quality or 'auto'
 
+**setQuality** `string`
 
-## Screenshots
+TODO
 
-Default setup - Menu selected:
-![Example](example.png)
-
-
-Display Current Quality option enabled:
-![Example](example-2.png)
-
-## Table of Contents
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Installation
-
-- [Installation](#installation)
-- [Usage](#usage)
-  - [`<script>` Tag](#script-tag)
-  - [Browserify/CommonJS](#browserifycommonjs)
-  - [RequireJS/AMD](#requirejsamd)
-- [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 ## Installation
 
 ```sh
-npm install --save videojs-hls-quality-selector
+npm install --save git+https://github.com/WebinarGeek/videojs-hls-quality-selector.git
 ```
 
 ## Usage
@@ -72,55 +46,57 @@ To include videojs-hls-quality-selector on your website or web application, use 
 
 ### `<script>` Tag
 
-This is the simplest case. Get the script in whatever way you prefer and include the plugin _after_ you include [video.js][videojs], so that the `videojs` global is available.
+You need to load the webpack parsed plain js file from the dist folder for this.
+Include the plugin _after_ you include [video.js](https://videojs.com).
+Both plugins will register themselves and be useable right away.
 
 ```html
 <script src="//path/to/video.min.js"></script>
 <script src="//path/to/videojs-contrib-quality-levels.min.js"></script>
-<script src="//path/to/videojs-hls-quality-selector.min.js"></script>
+<script src="dist/videojs-hls-quality-selector.min.js"></script>
 <script>
-  var player = videojs('my-video');
-
-  player.hlsQualitySelector();
+  const player = videojs('my-video')
+  player.hlsQualitySelector()
 </script>
 ```
 
-### Browserify/CommonJS
+### ES modules
 
-When using with Browserify, install videojs-hls-quality-selector via npm and `require` the plugin as you would any other module.
+When using ES modules, install videojs-hls-quality-selector via npm,
+then `import` the plugin as you would any other module.
+
+Note: For now it's not clear if you need to explicitly register it to make it work.
 
 ```js
-var videojs = require('video.js');
-
-// The actual plugin function is exported by this module, but it is also
-// attached to the `Player.prototype`; so, there is no need to assign it
-// to a variable.
-require('videojs-hls-quality-selector');
-
-var player = videojs('my-video');
-
-player.hlsQualitySelector({
-    displayCurrentQuality: true,
-});
+import videojs from 'videojs'
+import qualityLevels from 'videojs-contrib-quality-levels'
+import hlsQualitySelector from 'videojs-hls-quality-selector'
+const player = videojs('my-video')
+if (!videojs.getPlugin('qualityLevels')) videojs.registerPlugin('qualityLevels', qualityLevels)
+if (!videojs.getPlugin('hlsQualitySelector')) videojs.registerPlugin('hlsQualitySelector', hlsQualitySelector)
+player.hlsQualitySelector()
 ```
 
-### RequireJS/AMD
+### CommonJS
 
-When using with RequireJS (or another AMD library), get the script in whatever way you prefer and `require` the plugin as you normally would:
+When using CommonJS, install videojs-hls-quality-selector via npm,
+then `require` the plugin as you would any other module.
+
+Note: For now it's not clear if you need to explicitly register it to make it work.
 
 ```js
-require(['video.js', 'videojs-hls-quality-selector'], function(videojs) {
-  var player = videojs('my-video');
-
-  player.hlsQualitySelector({
-       displayCurrentQuality: true,
-    });
-});
+const videojs = require('video.js')
+const qualityLevels = require('qualityLevels')
+const hlsQualitySelector = require('videojs-hls-quality-selector')
+const player = videojs('my-video')
+if (!videojs.getPlugin('qualityLevels')) videojs.registerPlugin('qualityLevels', qualityLevels)
+if (!videojs.getPlugin('hlsQualitySelector')) videojs.registerPlugin('hlsQualitySelector', hlsQualitySelector)
+player.hlsQualitySelector()
 ```
 
 ## License
 
-MIT. Copyright (c) Chris Boustead (chris@forgemotion.com)
+The MIT License
 
-
-[videojs]: http://videojs.com/
+Copyright (c) 2022-2022 WebinarGeek
+Copyright (c) 2017-2021 Chris Boustead (chris@forgemotion.com)

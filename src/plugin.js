@@ -1,20 +1,11 @@
-import videojs from 'video.js';
-import {version as VERSION} from '../package.json';
-import ConcreteButton from './ConcreteButton';
-import ConcreteMenuItem from './ConcreteMenuItem';
-
-// Default options for the plugin.
-const defaults = {};
-
-// Cross-compatibility for Video.js 5 and 6.
-const registerPlugin = videojs.registerPlugin || videojs.plugin;
-// const dom = videojs.dom || videojs;
+import videojs from 'video.js'
+import ConcreteButton from './ConcreteButton.js';
+import ConcreteMenuItem from './ConcreteMenuItem.js';
 
 /**
  * VideoJS HLS Quality Selector Plugin class.
  */
 class HlsQualitySelectorPlugin {
-
   /**
    * Plugin Constructor.
    *
@@ -54,7 +45,6 @@ class HlsQualitySelectorPlugin {
    * Adds the quality menu button to the player control bar.
    */
   createQualityButton() {
-
     const player = this.player;
 
     this._qualityButton = new ConcreteButton(player);
@@ -220,14 +210,13 @@ const onPlayerReady = (player, options) => {
  */
 const hlsQualitySelector = function(options) {
   this.ready(() => {
-    onPlayerReady(this, videojs.mergeOptions(defaults, options));
+    onPlayerReady(this, videojs.mergeOptions({}, options));
   });
 };
 
-// Register the plugin with video.js.
-registerPlugin('hlsQualitySelector', hlsQualitySelector);
-
-// Include the version number.
-hlsQualitySelector.VERSION = VERSION;
-
+// Register and export the plugin
+videojs.registerPlugin('hlsQualitySelector', hlsQualitySelector);
+hlsQualitySelector.VERSION = "2.0.0-dev";
+window.hlsQualitySelector = hlsQualitySelector
+window.videojs?.registerPlugin('hlsQualitySelector', hlsQualitySelector)
 export default hlsQualitySelector;

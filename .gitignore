@@ -16,19 +16,8 @@ Desktop.ini
 .settings/
 .vscode/
 
-# Logs
+# Npm stuff
 logs
 *.log
 npm-debug.log*
-
-# Dependency directories
-bower_components/
 node_modules/
-
-# Yeoman meta-data
-.yo-rc.json
-
-# Build-related directories
-dist/
-docs/api/
-test/dist/
