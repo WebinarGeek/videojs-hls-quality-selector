@@ -16,11 +16,20 @@ class HlsQualitySelectorPlugin {
     this.player = player
     this.config = options
     // If there is quality levels plugin and the HLS tech exists then continue.
-    if (this.player.qualityLevels) {
+    if (this.player.qualityLevels && this.getHls()) {
       // Create the quality button.
       this.createQualityButton()
       this.bindPlayerEvents()
     }
+  }
+
+  /**
+   * Returns HLS Plugin
+   *
+   * @return {*} - videojs-hls-contrib plugin.
+   */
+  getHls() {
+    return this.player.tech({ IWillNotUseThisInPlugins: true }).hls
   }
 
   /**
