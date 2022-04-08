@@ -268,7 +268,7 @@ module.exports = {
     'require-unicode-regexp': 'error',
     'require-yield': 'error',
     'rest-spread-spacing': 'error',
-    semi: 'off',
+    semi: ['error', 'never'],
     'semi-spacing': 'error',
     'semi-style': 'error',
     'sort-vars': 'error',

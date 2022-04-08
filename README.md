@@ -11,40 +11,45 @@ To enable plugin in browsers with native HLS, you must force non-native HLS play
 
 ## Options
 
-**displayCurrentQuality** `boolean` - _false_
+The main function `hlsQualitySelector()` accepts an object with the following values:
 
-Set to true to display the currently selected resolution in the menu button.  When not enabled, displayed an included VJS "HD" icon.
+**displayQuality** `boolean` - _false_
+
+Set to true to display the currently selected resolution in the menu button.
+When not enabled, displayed an included VJS "HD" icon.
 
 **placementIndex** `integer`
 
-Set this to override the default positioning of the menu button in the control bar relative to the other components in the control bar.
+Set this to override the default positioning of the menu button in the control bar,
+and position it relative to the other components in the control bar.
 
 **vjsIconClass** `string` - _"vjs-icon-hd"_
 
-Set this to one of the custom VJS icons ([https://videojs.github.io/font/](https://videojs.github.io/font/)) to override the icon for the menu button. 
+Set this to one of the [custom VJS icons](https://videojs.github.io/font/) to override the icon for the menu button.
 
 
 ## Methods
 
-**getCurrentQuality** `string` - _'auto'__
+**getQuality** `{name?: string, bitrate: number, height?: number}`
 
-Return the current set quality or 'auto'
+Return the quality and info of the currently selected stream.
 
-**setQuality** `string`
+**setQuality** `{name?: string, bitrate?: number, height?: number}`
 
-TODO
+Set the quality to a stream based on name, bitrate and/or height.
+The criteria will be used to filter the available sources and switch to the first matching one.
 
 ## Installation
 
 ```sh
-npm install --save git+https://github.com/WebinarGeek/videojs-hls-quality-selector.git
+npm install git+https://github.com/WebinarGeek/videojs-hls-quality-selector.git
 ```
 
 ## Usage
 
 To include videojs-hls-quality-selector on your website or web application, use any of the following methods.
 
-### `<script>` Tag
+### `<script>` tag
 
 You need to load the webpack parsed plain js file from the dist folder for this.
 Include the plugin _after_ you include [video.js](https://videojs.com).
@@ -65,8 +70,6 @@ Both plugins will register themselves and be useable right away.
 When using ES modules, install videojs-hls-quality-selector via npm,
 then `import` the plugin as you would any other module.
 
-Note: For now it's not clear if you need to explicitly register it to make it work.
-
 ```js
 import videojs from 'videojs'
 import qualityLevels from 'videojs-contrib-quality-levels'
@@ -81,8 +84,6 @@ player.hlsQualitySelector()
 
 When using CommonJS, install videojs-hls-quality-selector via npm,
 then `require` the plugin as you would any other module.
-
-Note: For now it's not clear if you need to explicitly register it to make it work.
 
 ```js
 const videojs = require('video.js')
