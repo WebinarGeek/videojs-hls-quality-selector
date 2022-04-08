@@ -61,6 +61,8 @@ export default class ConcreteButton extends VideoJsButtonClass {
       const titleComponent = new VideoJsComponent(this.player_, { el: titleEl })
       this.hideThreshold_ += 1
       menu.addItem(titleComponent)
+      menu.contentEl().style.maxHeight = 'none'
+      menu.contentEl().style.overflowX = 'hidden'
     }
 
     this.items = this.createItems()

@@ -30,14 +30,15 @@ Set this to one of the [custom VJS icons](https://videojs.github.io/font/) to ov
 
 ## Methods
 
-**getQuality** `{name?: string, bitrate: number, height?: number}`
+**getQuality** `{name?: string, bitrate?: number, height?: number} | 'auto'`
 
 Return the quality and info of the currently selected stream.
 
-**setQuality** `{name?: string, bitrate?: number, height?: number}`
+**setQuality** `{name?: string, bitrate?: number, height?: number | 'auto'}`
 
 Set the quality to a stream based on name, bitrate and/or height.
-The criteria will be used to filter the available sources and switch to the first matching one.
+You may also pass a height "auto" to switch back to the automatic selection.
+This is not the same as supplying empty filters, because that would select the first.
 
 ## Installation
 

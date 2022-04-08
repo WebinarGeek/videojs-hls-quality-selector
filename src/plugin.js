@@ -15,23 +15,12 @@ class HlsQualitySelectorPlugin {
   constructor(player, options) {
     this.player = player
     this.config = options
-
-    // If there is quality levels plugin and the HLS tech exists
-    // then continue.
-    if (this.player.qualityLevels && this.getHls()) {
+    // If there is quality levels plugin and the HLS tech exists then continue.
+    if (this.player.qualityLevels) {
       // Create the quality button.
       this.createQualityButton()
       this.bindPlayerEvents()
     }
-  }
-
-  /**
-   * Returns HLS Plugin
-   *
-   * @return {*} - videojs-hls-contrib plugin.
-   */
-  getHls() {
-    return this.player.tech({ IWillNotUseThisInPlugins: true }).hls
   }
 
   /**
@@ -45,35 +34,25 @@ class HlsQualitySelectorPlugin {
    * Adds the quality menu button to the player control bar.
    */
   createQualityButton() {
-    const player = this.player
-
-    this._qualityButton = new ConcreteButton(player)
-
-    const placementIndex = player.controlBar.children().length - 2
-    const concreteButtonInstance = player.controlBar.addChild(this._qualityButton, {
+    this._qualityButton = new ConcreteButton(this.player)
+    const placementIndex = this.player.controlBar.children().length - 2
+    const concreteButtonInstance = this.player.controlBar.addChild(this._qualityButton, {
       componentClass: 'qualitySelector'
     }, this.config.placementIndex || placementIndex)
-
     concreteButtonInstance.addClass('vjs-quality-selector')
-    if (this.config.displayCurrentQuality) {
-      this.setButtonInnerText('auto')
-    } else {
-      const icon = ` ${this.config.vjsIconClass || 'vjs-icon-hd'}`
-
-      concreteButtonInstance
-        .menuButton_.$('.vjs-icon-placeholder').className += icon
-    }
+    const icon = this.config.vjsIconClass || 'vjs-icon-hd'
+    if (this.config.displayCurrentQuality) this.setButtonInnerText('auto')
+    else concreteButtonInstance.menuButton_.$('.vjs-icon-placeholder').classList.add(icon)
     concreteButtonInstance.removeClass('vjs-hidden')
   }
 
   /**
-   *Set inner button text.
+   * Set inner button text.
    *
    * @param {string} text - the text to display in the button.
    */
   setButtonInnerText(text) {
-    this._qualityButton
-      .menuButton_.$('.vjs-icon-placeholder').innerHTML = text
+    this._qualityButton.menuButton_.$('.vjs-icon-placeholder').innerHTML = text
   }
 
   /**
@@ -84,7 +63,6 @@ class HlsQualitySelectorPlugin {
    */
   getQualityMenuItem(item) {
     const player = this.player
-
     return new ConcreteMenuItem(player, item, this._qualityButton, this)
   }
 
@@ -92,40 +70,22 @@ class HlsQualitySelectorPlugin {
    * Executed when a quality level is added from HLS playlist.
    */
   onAddQualityLevel() {
-    const player = this.player
-    const qualityList = player.qualityLevels()
-    const levels = qualityList.levels_ || []
-    const levelItems = []
-
-    for (let i = 0; i < levels.length; ++i) {
-      if (!levels[i].height) continue
-
-      if (!levelItems.filter((_existingItem) => _existingItem.item && _existingItem.item.value === levels[i].height).length) {
-        const levelItem = this.getQualityMenuItem.call(this, {
-          label: `${levels[i].height}p`,
-          value: levels[i].height
-        })
-
-        levelItems.push(levelItem)
-      }
-    }
-
-    levelItems.sort((current, next) => {
+    const qualityLevels = Array.from(this.player.qualityLevels() || [])
+    const levelItems = qualityLevels.map((ql) => this.getQualityMenuItem({
+      label: niceLabel(ql),
+      height: ql.height || 0,
+      bitrate: ql.bitrate || 0
+    })).sort((current, next) => {
       if ((typeof current !== 'object') || (typeof next !== 'object')) return -1
-
-      if (current.item.value < next.item.value) return -1
-
-      if (current.item.value > next.item.value) return 1
-
+      if (current.item.height < next.item.height) return -1
+      if (current.item.height > next.item.height) return 1
       return 0
     })
-
-    levelItems.push(this.getQualityMenuItem.call(this, {
-      label: player.localize('Auto'),
-      value: 'auto',
+    levelItems.push(this.getQualityMenuItem({
+      label: this.player.localize('Auto'),
+      height: 'auto',
       selected: true
     }))
-
     if (this._qualityButton) {
       this._qualityButton.createItems = () => levelItems
       this._qualityButton.update()
@@ -134,25 +94,33 @@ class HlsQualitySelectorPlugin {
 
   /**
    * Set the quality to a stream based on name, bitrate and/or height.
+   * You may also pass a height "auto" to switch back to the automatic selection.
+   * This is not the same as supplying empty filters, because that would select the first.
    *
-   * @param {name?: string, bitrate?: number, height?: number} - Filters to find a stream
+   * @param {name?: string, bitrate?: number, height?: number | 'auto'} - Filters to find a stream
+   *
+   * @return {boolean} if a stream was found and switched to based on the filters
    */
-  setQuality(height) {
-    const qualityList = this.player.qualityLevels()
-
-    // Set quality on plugin
-    this._currentQuality = height
-
-    if (this.config.displayCurrentQuality) this.setButtonInnerText(height === 'auto'
-      ? height
-      : `${height}p`)
-
-    for (let i = 0; i < qualityList.length; ++i) {
-      const quality = qualityList[i]
-
-      quality.enabled = (quality.height === height || height === 'auto')
+  setQuality(filters = {}) {
+    const qualityList = Array.from(this.player.qualityLevels() || [])
+    if (filters.height === 'auto') {
+      qualityList.forEach((ql) => {
+        ql.enabled = true
+      })
+      return true
     }
+    const levels = qualityList.filter((ql) => (!filters.name || filters.name === ql.name)
+      && (!filters.bitrate || filters.bitrate === ql.bitrate)
+      && (!filters.height || filters.height === ql.height))
+    const match = levels?.[0]
+    if (!match) return false
+    if (this.config.displayCurrentQuality) this.setButtonInnerText(niceLabel(match))
+    qualityList.forEach((ql) => {
+      ql.enabled = match === ql
+    })
+    this._currentQuality = match
     this._qualityButton.unpressButton()
+    return true
   }
 
   /**
@@ -163,6 +131,12 @@ class HlsQualitySelectorPlugin {
   getQuality() {
     return this._currentQuality || 'auto'
   }
+}
+
+const niceLabel = (item) => {
+  if (item.height && item.bitrate) return `${item.height}p (${item.bitrate / 1000}kb)`
+  if (item.height) return `${item.height}p`
+  return `${item.bitrate / 1000}kb`
 }
 
 /**
