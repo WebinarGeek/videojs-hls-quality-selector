@@ -62,8 +62,7 @@ class HlsQualitySelectorPlugin {
    * @return {ConcreteMenuItem} - Menu item
    */
   getQualityMenuItem(item) {
-    const player = this.player
-    return new ConcreteMenuItem(player, item, this._qualityButton, this)
+    return new ConcreteMenuItem(this.player, item, this._qualityButton, this)
   }
 
   /**
@@ -72,9 +71,7 @@ class HlsQualitySelectorPlugin {
   onAddQualityLevel() {
     const qualityLevels = Array.from(this.player.qualityLevels() || [])
     const levelItems = qualityLevels.map((ql) => this.getQualityMenuItem({
-      label: niceLabel(ql),
-      height: ql.height || 0,
-      bitrate: ql.bitrate || 0
+      label: niceLabel(ql), height: ql.height || 0, bitrate: ql.bitrate || 0
     })).sort((current, next) => {
       if ((typeof current !== 'object') || (typeof next !== 'object')) return -1
       if (current.item.height < next.item.height) return -1
@@ -82,9 +79,7 @@ class HlsQualitySelectorPlugin {
       return 0
     })
     levelItems.push(this.getQualityMenuItem({
-      label: this.player.localize('Auto'),
-      height: 'auto',
-      selected: true
+      label: 'Auto', height: 'auto', selected: true
     }))
     if (this._qualityButton) {
       this._qualityButton.createItems = () => levelItems
@@ -107,6 +102,8 @@ class HlsQualitySelectorPlugin {
       qualityList.forEach((ql) => {
         ql.enabled = true
       })
+      this._currentQuality = 'auto'
+      this._qualityButton.unpressButton()
       return true
     }
     const levels = qualityList.filter((ql) => (!filters.name || filters.name === ql.name)
