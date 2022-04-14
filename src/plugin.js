@@ -15,28 +15,11 @@ class HlsQualitySelectorPlugin {
   constructor(player, options) {
     this.player = player
     this.config = options
-    // If there is quality levels plugin and the HLS tech exists then continue.
-    if (this.player.qualityLevels && this.getHls()) {
-      // Create the quality button.
-      this.createQualityButton()
-      this.bindPlayerEvents()
+    try {
+      this.player.qualityLevels().on('addqualitylevel', this.onAddQualityLevel.bind(this))
+    } catch {
+      // Quality levels plugin or array not present, don't load plugin
     }
-  }
-
-  /**
-   * Returns if the HLS Plugin is loaded
-   *
-   * @return {*} - videojs-hls-contrib plugin.
-   */
-  getHls() {
-    return this.player.tech({ IWillNotUseThisInPlugins: true })?.hls
-  }
-
-  /**
-   * Binds listener for quality level changes.
-   */
-  bindPlayerEvents() {
-    this.player.qualityLevels().on('addqualitylevel', this.onAddQualityLevel.bind(this))
   }
 
   /**
@@ -90,10 +73,9 @@ class HlsQualitySelectorPlugin {
     levelItems.push(this.getQualityMenuItem({
       label: 'Auto', height: 'auto', selected: true
     }))
-    if (this._qualityButton) {
-      this._qualityButton.createItems = () => levelItems
-      this._qualityButton.update()
-    }
+    if (!this._qualityButton) this.createQualityButton()
+    this._qualityButton.createItems = () => levelItems
+    this._qualityButton.update()
   }
 
   /**
