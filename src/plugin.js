@@ -24,12 +24,12 @@ class HlsQualitySelectorPlugin {
   }
 
   /**
-   * Returns HLS Plugin
+   * Returns if the HLS Plugin is loaded
    *
    * @return {*} - videojs-hls-contrib plugin.
    */
   getHls() {
-    return this.player.tech({ IWillNotUseThisInPlugins: true }).hls
+    return this.player.tech({ IWillNotUseThisInPlugins: true })?.hls
   }
 
   /**
