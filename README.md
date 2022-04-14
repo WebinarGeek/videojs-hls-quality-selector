@@ -1,19 +1,14 @@
 # videojs-hls-quality-selector
 
 Adds a quality selector menu for HLS sources played in videojs.  
-Requires `videojs-contrib-quality-levels` plugins.  
-Any HLS manifest with multiple playlists/renditions should be selectable from within the added control.
-
-**Native HLS**
-
-Does not yet support browsers using native HLS (Safari, Edge, etc).  
-To enable plugin in browsers with native HLS, you must force non-native HLS playback:
+Requires `videojs-contrib-quality-levels` plugin.  
+Any HLS manifest with multiple playlists/renditions should be selectable in the menu.
 
 ## Options
 
 The main function `hlsQualitySelector()` accepts an object with the following values:
 
-**displayQuality** `boolean` - _false_
+**displayCurrentQuality** `boolean` - _false_
 
 Set to true to display the currently selected resolution in the menu button.
 When not enabled, displayed an included VJS "HD" icon.
@@ -27,12 +22,11 @@ and position it relative to the other components in the control bar.
 
 Set this to one of the [custom VJS icons](https://videojs.github.io/font/) to override the icon for the menu button.
 
-
 ## Methods
 
-**getQuality** `{name?: string, bitrate?: number, height?: number} | 'auto'`
+**getQuality** `QualityLevel | 'auto'`
 
-Return the quality and info of the currently selected stream.
+Return the quality and info of the currently selected stream or 'auto'.
 
 **setQuality** `{name?: string, bitrate?: number, height?: number | 'auto'}`
 
@@ -88,7 +82,7 @@ then `require` the plugin as you would any other module.
 
 ```js
 const videojs = require('video.js')
-const qualityLevels = require('qualityLevels')
+const qualityLevels = require('videojs-contrib-quality-levels')
 const hlsQualitySelector = require('videojs-hls-quality-selector')
 const player = videojs('my-video')
 if (!videojs.getPlugin('qualityLevels')) videojs.registerPlugin('qualityLevels', qualityLevels)
