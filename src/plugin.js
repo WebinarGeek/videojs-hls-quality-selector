@@ -45,7 +45,7 @@ class HlsQualitySelectorPlugin {
     if (!this._qualityButton) this.createQualityButton()
     const qualityLevels = Array.from(this.player.qualityLevels() || [])
     const levelItems = qualityLevels.map((ql) => new ConcreteMenuItem(this.player, {
-      label: niceLabel(ql), height: ql.height || 0, bitrate: ql.bitrate || 0
+      label: niceLabel(ql), height: ql.height || 0, bitrate: ql.bitrate || 0, id: ql.id
     }, this)).sort((current, next) => {
       if ((typeof current !== 'object') || (typeof next !== 'object')) return -1
       if (current.item.height < next.item.height) return -1
@@ -53,7 +53,7 @@ class HlsQualitySelectorPlugin {
       return 0
     })
     levelItems.push(new ConcreteMenuItem(this.player, {
-      label: 'Auto', height: 'auto', selected: true
+      label: 'Auto', height: 'auto', selected: true, id: 'auto'
     }, this))
     this._qualityButton.items = levelItems
     this._qualityButton.update()
@@ -76,10 +76,9 @@ class HlsQualitySelectorPlugin {
         ql.enabled = true
       })
     } else {
-      const levels = qualityList.filter((ql) => (!filters.name || filters.name === ql.name)
+      match = qualityList.find((ql) => (!filters.name || filters.name === ql.name)
         && (!filters.bitrate || filters.bitrate === ql.bitrate)
         && (!filters.height || filters.height === ql.height))
-      match = levels?.[0]
       if (!match) return false
       qualityList.forEach((ql) => {
         ql.enabled = match === ql
@@ -88,11 +87,8 @@ class HlsQualitySelectorPlugin {
     this._currentQuality = match
     if (this.config.displayCurrentQuality) this._qualityButton.menuButton_.el().textContent = niceLabel(match)
     const items = this._qualityButton.items
-    for (let i = 0; i < items.length; ++i) {
-      const item = items[i]
-      if (match === 'auto') item.selected(i === items.length - 1)
-      else item.selected(i === qualityList.indexOf(match))
-    }
+    const id = match.id || 'auto'
+    for (const button of items) button.selected(button.item.id === id)
     this._qualityButton.unpressButton()
     return true
   }
@@ -109,9 +105,10 @@ class HlsQualitySelectorPlugin {
 
 const niceLabel = (item) => {
   if (item === 'auto') return item
-  if (item.height && item.bitrate) return `${item.height}p (${item.bitrate / 1000}kb)`
+  const bitrate = Math.round(item.bitrate / 1000)
+  if (item.height && bitrate > 0) return `${item.height}p (${bitrate}kb)`
   if (item.height) return `${item.height}p`
-  return `${item.bitrate / 1000}kb`
+  return `${bitrate}kb`
 }
 
 /**
