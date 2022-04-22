@@ -21,6 +21,8 @@ export default class ConcreteButton extends VideoJsButtonClass {
     this.hideThreshold_ = 0
     menu.contentEl().style.maxHeight = 'none'
     menu.contentEl().style.overflowX = 'hidden'
+    menu.el().style.width = '12em'
+    menu.el().style.left = '-4em'
     if (this.items) for (let i = 0; i < this.items.length; i++) menu.addItem(this.items[i])
     return menu
   }
