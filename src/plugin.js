@@ -1,4 +1,3 @@
-import videojs from 'video.js'
 import ConcreteButton from './ConcreteButton.js'
 import ConcreteMenuItem from './ConcreteMenuItem.js'
 
@@ -144,12 +143,11 @@ const onPlayerReady = (player, options) => {
  */
 const hlsQualitySelector = function hlsQualitySelector(options) {
   this.ready(() => {
-    onPlayerReady(this, videojs.mergeOptions({}, options))
+    onPlayerReady(this, options ?? {})
   })
 }
 
 // Register and export the plugin
-videojs.registerPlugin('hlsQualitySelector', hlsQualitySelector)
 hlsQualitySelector.VERSION = '2.0.0-dev'
 window.hlsQualitySelector = hlsQualitySelector
 window.videojs?.registerPlugin('hlsQualitySelector', hlsQualitySelector)
