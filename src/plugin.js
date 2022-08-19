@@ -141,14 +141,14 @@ const onPlayerReady = (player, options) => {
  * @param    {Object} [options={}]
  *           An object of options left to the plugin author to define.
  */
-const hlsQualitySelector = function hlsQualitySelector(options) {
+const hlsQualitySelector = function hlsQualitySelector(options = {}) {
   this.ready(() => {
-    onPlayerReady(this, options ?? {})
+    onPlayerReady(this, options)
   })
 }
 
 // Register and export the plugin
 hlsQualitySelector.VERSION = '2.0.0-dev'
 window.hlsQualitySelector = hlsQualitySelector
-window.videojs?.registerPlugin('hlsQualitySelector', hlsQualitySelector)
+if (window.videojs) window.videojs.registerPlugin('hlsQualitySelector', hlsQualitySelector)
 export default hlsQualitySelector
