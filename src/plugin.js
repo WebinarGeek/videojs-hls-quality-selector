@@ -148,7 +148,7 @@ const hlsQualitySelector = function hlsQualitySelector(options = {}) {
 }
 
 // Register and export the plugin
-hlsQualitySelector.VERSION = '3.0.0-dev'
+hlsQualitySelector.VERSION = '4.0.0-dev'
 window.hlsQualitySelector = hlsQualitySelector
 if (window.videojs) window.videojs.registerPlugin('hlsQualitySelector', hlsQualitySelector)
 export default hlsQualitySelector
